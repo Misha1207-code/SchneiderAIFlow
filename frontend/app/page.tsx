@@ -2,58 +2,75 @@
 
 import { useState } from "react";
 
+import Sidebar from "../components/Sidebar";
+import Header from "../components/Header";
+import PromptCard from "../components/PromptCard";
+import WorkflowCard from "../components/WorkflowCard";
+import FlowDiagram from "../components/FlowDiagram";
+import RecommendationCard from "../components/RecommendationCard";
+
 export default function Home() {
+
   const [prompt, setPrompt] = useState("");
-  const [response, setResponse] = useState(null);
-const generateWorkflow = async () => {
+  const [response, setResponse] = useState<any>(null);
 
-    const res = await fetch("https://turbo-space-broccoli-pjg9w569rv9w2qq6-8000.app.github.dev/analyze",{
+  const generateWorkflow = async () => {
 
-        method:"POST",
+    try {
 
-        headers:{
-            "Content-Type":"application/json"
-        },
+      const res = await fetch(
+        "https://turbo-space-broccoli-pjg9w569rv9w2qq6-8000.app.github.dev/analyze",
+        {
+          method: "POST",
 
-        body:JSON.stringify({
+          headers: {
+            "Content-Type": "application/json",
+          },
 
-            prompt
+          body: JSON.stringify({
+            prompt,
+          }),
+        }
+      );
 
-        })
+      const data = await res.json();
 
-    });
+      setResponse(data);
 
-    const data = await res.json();
+    } catch (err) {
 
-    setResponse(data);
+      console.error(err);
 
-}
+    }
+
+  };
+
   return (
-    <main
-      style={{
-        padding: "40px",
-        fontFamily: "Arial",
-      }}
-    >
-      <h1>SchneiderFlow AI</h1>
 
-      <textarea
-        rows={8}
-        cols={70}
-        placeholder="Describe your workflow..."
-        value={prompt}
-        onChange={(e) => setPrompt(e.target.value)}
-      />
+    <div className="dashboard">
 
-      <br />
-      <br />
+      <Sidebar />
 
-      <button onClick={generateWorkflow}>
-        Generate Workflow
-      </button>
-      <pre>
-        {JSON.stringify(response,null,2)}
-        </pre>
-    </main>
+      <div className="main">
+
+        <Header />
+
+        <PromptCard
+          prompt={prompt}
+          setPrompt={setPrompt}
+          generateWorkflow={generateWorkflow}
+        />
+
+        <WorkflowCard data={response} />
+
+        <FlowDiagram data={response} />
+
+        <RecommendationCard />
+
+      </div>
+
+    </div>
+
   );
+
 }
