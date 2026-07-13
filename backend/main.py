@@ -11,8 +11,10 @@ app = FastAPI(
 # Enable CORS (Development)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=[
+        "https://turbo-space-broccoli-pjg9w569rv9w2qq6-3000.app.github.dev"
+    ],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
