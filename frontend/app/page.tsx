@@ -10,49 +10,52 @@ import FlowDiagram from "../components/FlowDiagram";
 import RecommendationCard from "../components/RecommendationCard";
 
 export default function Home() {
-
   const [prompt, setPrompt] = useState("");
   const [response, setResponse] = useState<any>(null);
 
   const generateWorkflow = async () => {
-
     try {
+      const res = await fetch("/api/analyze", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt,
+        }),
+      });
 
-      const res = await fetch(
-        "https://turbo-space-broccoli-pjg9w569rv9w2qq6-8000.app.github.dev/analyze",
-        {
-          method: "POST",
+      console.log("Status:", res.status);
 
-          headers: {
-            "Content-Type": "application/json",
-          },
+      const text = await res.text();
 
-          body: JSON.stringify({
-            prompt,
-          }),
-        }
-      );
+      console.log("Response:", text);
 
-      const data = await res.json();
+      if (!text) {
+        console.error("Backend returned an empty response.");
+        return;
+      }
 
-      setResponse(data);
+      try {
+        const data = JSON.parse(text);
 
+        console.log("Parsed Data:", data);
+
+        setResponse(data);
+      } catch (err) {
+        console.error("Invalid JSON returned from backend.");
+        console.error(text);
+      }
     } catch (err) {
-
-      console.error(err);
-
+      console.error("Fetch Error:", err);
     }
-
   };
 
   return (
-
     <div className="dashboard">
-
       <Sidebar />
 
       <div className="main">
-
         <Header />
 
         <PromptCard
@@ -66,11 +69,7 @@ export default function Home() {
         <FlowDiagram data={response} />
 
         <RecommendationCard />
-
       </div>
-
     </div>
-
   );
-
 }
