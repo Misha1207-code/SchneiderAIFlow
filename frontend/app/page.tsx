@@ -14,42 +14,35 @@ export default function Home() {
   const [response, setResponse] = useState<any>(null);
 
   const generateWorkflow = async () => {
-    try {
-      const res = await fetch("/api/analyze", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          prompt,
-        }),
-      });
+  try {
+    const res = await fetch("/api/analyze", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        prompt,
+      }),
+    });
 
-      console.log("Status:", res.status);
+    console.log("HTTP Status:", res.status);
 
-      const text = await res.text();
-
-      console.log("Response:", text);
-
-      if (!text) {
-        console.error("Backend returned an empty response.");
-        return;
-      }
-
-      try {
-        const data = JSON.parse(text);
-
-        console.log("Parsed Data:", data);
-
-        setResponse(data);
-      } catch (err) {
-        console.error("Invalid JSON returned from backend.");
-        console.error(text);
-      }
-    } catch (err) {
-      console.error("Fetch Error:", err);
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error("API Error:", errorText);
+      return;
     }
-  };
+
+    const data = await res.json();
+
+    console.log("Received Data:", data);
+
+    setResponse(data);
+
+  } catch (err) {
+    console.error("Fetch Error:", err);
+  }
+};
 
   return (
     <div className="dashboard">
