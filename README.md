@@ -24,7 +24,7 @@ Backend:
 - Python
 
 AI:
-- tbd
+- Groq
 
 Database:
 - PostgreSQL
